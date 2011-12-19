@@ -19,6 +19,7 @@
  */
 package org.neo4j.server.plugin.geoff;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
@@ -26,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.kernel.impl.annotations.Documented;
 import org.neo4j.server.rest.AbstractRestFunctionalTestBase;
 
@@ -33,19 +35,24 @@ public class GeoffPluginFunctionalTest extends AbstractRestFunctionalTestBase
 {
     private static final String ENDPOINT = "http://localhost:7474/db/data/ext/GeoffPlugin/graphdb/insert";
 
-    /**
-     * A simple query returning all nodes connected to node 1, returning the
-     * node and the name property, if it exists, otherwise `null`:
-     */
     @Test
     @Documented
-    public void sen_a_GEOFF_map() throws UnsupportedEncodingException
+    public void send_a_GEOFF_map() throws UnsupportedEncodingException
     {
-        String geoff = "{\"(Joe)\":{\"name\":\"Joe\"}}";
+        GraphDatabaseService db = graphdb();
+        String geoff = "{" +
+                "\"(doc)\": {\"name\": \"doctor\"}," +
+                "\"(dal)\": {\"name\": \"dalek\"}," +
+                "\"(doc)-[:ENEMY_OF]->(dal)\": {\"since\":\"forever\"}," +
+                "\"(doc)<=|People|\":     {\"name\": \"The Doctor\"}" +
+                "}";
         gen.get().expectedStatus( Status.OK.getStatusCode() ).payload(
                 "{\"geoff\":"  + geoff + "}"  );
         String response = gen.get().post( ENDPOINT ).entity();
         assertTrue( response.contains( "OK" ) );
+        assertTrue(db.index().existsForNodes("People"));
+        assertTrue(db.index().forNodes("People").get("name", "The Doctor").hasNext());
+        assertEquals("doctor", db.index().forNodes("People").get("name", "The Doctor").getSingle().getProperty("name"));
     }
     
 }

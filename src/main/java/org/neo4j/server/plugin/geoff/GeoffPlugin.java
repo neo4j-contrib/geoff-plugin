@@ -19,14 +19,10 @@
  */
 package org.neo4j.server.plugin.geoff;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.neo4j.cypher.SyntaxException;
-import org.neo4j.geoff.BadDescriptorException;
-import org.neo4j.geoff.GEOFFLoader;
-import org.neo4j.geoff.UnknownNodeException;
-import org.neo4j.geoff.UnknownRelationshipException;
+import org.neo4j.geoff.GEOFF;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.server.plugins.Description;
 import org.neo4j.server.plugins.Name;
@@ -63,24 +59,9 @@ public class GeoffPlugin extends ServerPlugin
     {
         try
         {
-            GEOFFLoader.loadIntoNeo4j(geoff, neo4j);
+            GEOFF.loadIntoNeo4j(geoff, neo4j, null);
         }
-        catch ( BadDescriptorException e )
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch ( IOException e )
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch ( UnknownNodeException e )
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch ( UnknownRelationshipException e )
+        catch ( Exception e )
         {
             // TODO Auto-generated catch block
             e.printStackTrace();

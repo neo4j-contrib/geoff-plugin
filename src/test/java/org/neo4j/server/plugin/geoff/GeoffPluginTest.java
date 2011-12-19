@@ -97,8 +97,7 @@ public class GeoffPluginTest implements GraphHolder
     @BeforeClass
     public static void startDatabase()
     {
-        db = new ImpermanentGraphDatabase( "target/db"
-                                           + System.currentTimeMillis() );
+        db = new ImpermanentGraphDatabase(  );
         db.cleanContent(false);
 
     }
